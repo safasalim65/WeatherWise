@@ -27,4 +27,4 @@ WeatherWise is a web application built with Django that allows users to view cur
 - Click the "Show Forecast" button to toggle the display of weather forecasts.
 - To remove a city from your list, click the "Delete" button next to it.
 
-  ![WeatherWise](images/Screenshot.png)
+  ![WeatherWise](WeatherApp/weatherpred/images/Screenshot.png)
