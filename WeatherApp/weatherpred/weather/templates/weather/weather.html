@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load widget_tweaks %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WeatherWise</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Include your preferred font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Include Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Custom styles -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        .bg-primary {
+            background: linear-gradient(135deg, #2980b9, #6c5ce7);
+            color: #fff;
+            padding: 40px 0;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .box {
+            background-color: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .box:hover {
+            transform: translateY(-5px);
+        }
+
+        .box p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .box p strong {
+            font-weight: bold;
+        }
+
+        .delete-button {
+            border: none;
+            background: none;
+            color: #e74c3c;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .delete-button:hover {
+            color: #c0392b;
+        }
+
+        .forecast-button {
+            margin-top: 10px;
+            background-color: #27ae60;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .forecast-button:hover {
+            background-color: #2ecc71;
+        }
+
+        .forecast {
+            display: none;
+        }
+
+        footer.footer {
+            background-color: #34495e;
+            color: #fff;
+            padding: 20px 0;
+        }
+
+        footer.footer span {
+            font-size: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="bg-primary text-center">
+        <div class="container">
+            <h1 class="title">WeatherWise</h1>
+        </div>
+    </header>
+
+    <div class="content">
+        <section class="container my-4">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="input-group mb-3">
+                    {{ form.name|add_class:"form-control" }}
+                    <button type="submit" class="btn btn-info"><i class="fas fa-plus"></i> Add City</button>
+                </div>
+                {% if message %}
+                    <div class="alert alert-info">{{ message }}</div>
+                {% endif %}
+            </form>
+        </section>
+
+        <section class="container">
+            <div class="row">
+                {% for data in weather_data %}
+                <div class="col-12 mb-4">
+                    <div class="box p-3">
+                        <p>
+                            <strong>{{ data.current_weather.city }}</strong><br>
+                            Current Temperature: {{ data.current_weather.temperature }}° C<br>
+                            Current Description: {{ data.current_weather.description }}<br>
+                            Humidity: {{ data.current_weather.humidity }}%<br>
+                            Wind Speed: {{ data.current_weather.wind_speed }} m/s<br>
+                            Sunrise: {{ data.current_weather.sunrise }}<br>
+                            Sunset: {{ data.current_weather.sunset }}
+                        </p>
+                        <button class="btn forecast-button" onclick="toggleForecast(this)"><i class="fas fa-cloud-sun"></i> Show Forecast</button>
+                        <div class="forecast mt-3">
+                            <hr>
+                            <p><strong>Weather Forecast:</strong></p>
+                            {% for forecast in data.forecast_data %}
+                            <p>
+                                Date: {{ forecast.date }}<br>
+                                Temperature: {{ forecast.temperature }}° C<br>
+                                Description: {{ forecast.description }}
+                            </p>
+                            {% endfor %}
+                        </div>
+                        <div class="text-end mt-3">
+                            <a href="{% url 'delete_city' data.current_weather.city %}" class="delete-button btn btn-danger"><i class="fas fa-trash-alt"></i> Delete</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer text-center">
+        <!-- Footer content -->
+        <div class="container">
+            <span>&copy; 2024 WeatherWise. All Rights Reserved.</span>
+        </div>
+    </footer>
+    <!-- Include Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleForecast(button) {
+            const forecastDiv = button.nextElementSibling;
+            if (forecastDiv.style.display === "none" || forecastDiv.style.display === "") {
+                forecastDiv.style.display = "block";
+                button.innerHTML = '<i class="fas fa-cloud-sun"></i> Hide Forecast';
+            } else {
+                forecastDiv.style.display = "none";
+                button.innerHTML = '<i class="fas fa-cloud-sun"></i> Show Forecast';
+            }
+        }
+    </script>
+</body>
+</html>
